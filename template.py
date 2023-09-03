@@ -35,7 +35,7 @@ def main():
 
         # Add your input fields here
         # For example:
-        input_text = st.text_input("Enter text for prediction", "")
+        input_text = st.text_input("Enter text for prediction")
 
         # Add a button to trigger the prediction
         if st.button("Predict"):
@@ -44,7 +44,7 @@ def main():
             prediction = single_predict(input_text)
 
             # Display the prediction result
-            st.write("Prediction:", prediction)
+            st.write(f"Prediction: {prediction}")
 
     elif choice == "Batch Prediction":
         # Add a title and some text to the app:
@@ -62,45 +62,44 @@ def main():
                 st.error("Error: Invalid CSV file. Please upload a valid CSV file.")
             # Display the uploaded data
             st.subheader("Input Data")
-            st.dataframe(df)
+            st.dataframe(df, use_container_width=True)
 
             # Perform predictions on the uploaded data
             predictions = batch_predict(df)
 
             # Display the prediction results
             st.subheader("Prediction Results")
-            st.dataframe(predictions)
+            st.dataframe(predictions, use_container_width=True)
 
 # Define your model prediction function here
 # For example:
 
 # We are going to use st.cache to improve performance for predictions.
-@st.cache
-
+@st.cache_data
 def single_predict(input_text):
     # Format the input_text so that you can pass it to the model
     # For example:
-    input_text = [input_text]
+    input_text = int(input_text)
 
     # Call your model to make predictions on the input_text
     # For example:
-    prediction = model.predict(input_text)
+    prediction = model.predict([[input_text]])
 
     # Make sure to return the prediction result
-    return prediction[0]
+    return int(prediction)
 
-@st.cache
+@st.cache_data
 def batch_predict(df):
     # Format the dataframe so that you can pass it to the model
     # For example:
-    df = df["COLUMN_1", "COLUMN_2", "COLUMN_3"].values
+    df = df[["temperature"]]
 
     # Call your model to make predictions on the dataframe
     # For example:
     predictions = model.predict(df)
-
+    print(type(predictions))
     # Make sure to return the prediction results
-    return predictions
+    return list(predictions)
 
 
 # Run the app
