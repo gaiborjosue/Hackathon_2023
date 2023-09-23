@@ -3,11 +3,12 @@ import joblib
 import pandas as pd
 import os
 
-# Import your model and any necessary dependencies here
-if os.path.exists("model.joblib"):
-    model = joblib.load("model.joblib")
+# 1. Import your model and any necessary dependencies here
+if os.path.exists("Testing/model.joblib"):
+    model = joblib.load("Testing/model.joblib")
 
-# Set up your Streamlit app
+
+# 2. Set up your Streamlit app
 def main():
     # (Optional) Set page title and favicon.
     st.set_page_config(page_title="Hackathon Model Showcase", page_icon="🧊")
@@ -21,7 +22,7 @@ def main():
         st.info(
             "PROJECT_DESCRIPTION")
     
-
+    # Now lets add content to each sub-page of your site
     if choice == "Home":
         # Add a title and some text to the app:
         st.title("Hackathon Model Showcase")
@@ -35,16 +36,16 @@ def main():
 
         # Add your input fields here
         # For example:
-        input_text = st.text_input("Enter text for prediction", "")
+        input_text = st.text_input("Enter text for prediction")
 
         # Add a button to trigger the prediction
         if st.button("Predict"):
             # Call your model and perform the prediction here
             # For example:
-            prediction = single_predict(input_text)
+            prediction = _singlePredict(input_text)
 
             # Display the prediction result
-            st.write("Prediction:", prediction)
+            st.subheader(f"Prediction: {prediction}")
 
     elif choice == "Batch Prediction":
         # Add a title and some text to the app:
@@ -62,45 +63,45 @@ def main():
                 st.error("Error: Invalid CSV file. Please upload a valid CSV file.")
             # Display the uploaded data
             st.subheader("Input Data")
-            st.dataframe(df)
+            st.dataframe(df, use_container_width=True)
 
             # Perform predictions on the uploaded data
-            predictions = batch_predict(df)
+            predictions = _batchPredict(df)
 
             # Display the prediction results
             st.subheader("Prediction Results")
-            st.dataframe(predictions)
+            st.dataframe(predictions, use_container_width=True)
 
 # Define your model prediction function here
 # For example:
 
 # We are going to use st.cache to improve performance for predictions.
-@st.cache
-
-def single_predict(input_text):
+@st.cache_data
+def _singlePredict(input_text):
     # Format the input_text so that you can pass it to the model
     # For example:
-    input_text = [input_text]
-
     # Call your model to make predictions on the input_text
     # For example:
-    prediction = model.predict(input_text)
+    prediction = model.predict([[float(input_text)]])
 
     # Make sure to return the prediction result
-    return prediction[0]
+    return prediction[0][0]
 
-@st.cache
-def batch_predict(df):
+@st.cache_data
+def _batchPredict(df):
     # Format the dataframe so that you can pass it to the model
     # For example:
-    df = df["COLUMN_1", "COLUMN_2", "COLUMN_3"].values
+    df = df[["Temperature"]]
 
     # Call your model to make predictions on the dataframe
     # For example:
     predictions = model.predict(df)
 
+    # Predictions DF
+    dfPredictions = pd.DataFrame(predictions, columns=(["Humidity 💦"]))
+
     # Make sure to return the prediction results
-    return predictions
+    return dfPredictions
 
 
 # Run the app
