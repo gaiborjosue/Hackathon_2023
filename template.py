@@ -1,12 +1,13 @@
 import streamlit as st
 import joblib
+import pickle
 import pandas as pd
 import os
 
 # Import your model and any necessary dependencies here
 if os.path.exists("model.joblib"):
     model = joblib.load("model.joblib")
-
+    #### or:
 # Set up your Streamlit app
 def main():
     # (Optional) Set page title and favicon.
