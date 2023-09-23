@@ -1,14 +1,14 @@
 import streamlit as st
 import joblib
-import pickle
 import pandas as pd
 import os
 
-# Import your model and any necessary dependencies here
-if os.path.exists("model.joblib"):
-    model = joblib.load("model.joblib")
-    #### or:
-# Set up your Streamlit app
+# 1. Import your model and any necessary dependencies here
+if os.path.exists("Testing/model.joblib"):
+    model = joblib.load("Testing/model.joblib")
+
+
+# 2. Set up your Streamlit app
 def main():
     # (Optional) Set page title and favicon.
     st.set_page_config(page_title="Hackathon Model Showcase", page_icon="🧊")
@@ -22,7 +22,7 @@ def main():
         st.info(
             "PROJECT_DESCRIPTION")
     
-
+    # Now lets add content to each sub-page of your site
     if choice == "Home":
         # Add a title and some text to the app:
         st.title("Hackathon Model Showcase")
@@ -42,10 +42,10 @@ def main():
         if st.button("Predict"):
             # Call your model and perform the prediction here
             # For example:
-            prediction = single_predict(input_text)
+            prediction = _singlePredict(input_text)
 
             # Display the prediction result
-            st.write(f"Prediction: {prediction}")
+            st.subheader(f"Prediction: {prediction}")
 
     elif choice == "Batch Prediction":
         # Add a title and some text to the app:
@@ -66,7 +66,7 @@ def main():
             st.dataframe(df, use_container_width=True)
 
             # Perform predictions on the uploaded data
-            predictions = batch_predict(df)
+            predictions = _batchPredict(df)
 
             # Display the prediction results
             st.subheader("Prediction Results")
@@ -77,30 +77,31 @@ def main():
 
 # We are going to use st.cache to improve performance for predictions.
 @st.cache_data
-def single_predict(input_text):
+def _singlePredict(input_text):
     # Format the input_text so that you can pass it to the model
     # For example:
-    input_text = int(input_text)
-
     # Call your model to make predictions on the input_text
     # For example:
-    prediction = model.predict([[input_text]])
+    prediction = model.predict([[float(input_text)]])
 
     # Make sure to return the prediction result
-    return int(prediction)
+    return prediction[0][0]
 
 @st.cache_data
-def batch_predict(df):
+def _batchPredict(df):
     # Format the dataframe so that you can pass it to the model
     # For example:
-    df = df[["temperature"]]
+    df = df[["Temperature"]]
 
     # Call your model to make predictions on the dataframe
     # For example:
     predictions = model.predict(df)
-    print(type(predictions))
+
+    # Predictions DF
+    dfPredictions = pd.DataFrame(predictions, columns=(["Humidity 💦"]))
+
     # Make sure to return the prediction results
-    return list(predictions)
+    return dfPredictions
 
 
 # Run the app
